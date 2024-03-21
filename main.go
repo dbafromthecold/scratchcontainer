@@ -30,11 +30,12 @@ func run() {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Cloneflags:   syscall.CLONE_NEWUTS | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS,
+		Cloneflags:   syscall.CLONE_NEWUTS | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS | syscall.CLONE_NEWNET, // Added CLONE_NEWNET for network namespace
 		Unshareflags: syscall.CLONE_NEWNS,
 	}
 
 	must(cmd.Run())
+	setupPortForwarding() // This function will need to be defined to set up port forwarding
 }
 
 func child() {
@@ -78,4 +79,12 @@ func must(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func setupPortForwarding() {
+	// Here you would use exec.Command to call iptables or an equivalent command to forward ports.
+	// Example (you'll need to adjust the iptables command to fit your needs):
+	// err := exec.Command("iptables", "-t", "nat", "-A", "PREROUTING", "-p", "tcp", "--dport", "15789", "-j", "DNAT", "--to-destination", "IP_OF_NAMESPACE:1433").Run()
+	// must(err)
+	// Note: You'll need to replace IP_OF_NAMESPACE with the actual IP address of your network namespace.
 }
