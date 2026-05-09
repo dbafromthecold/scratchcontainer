@@ -39,7 +39,7 @@ func main() {
 func run() error {
 	rootfs := os.Args[2]
 	command := os.Args[3:]
-	
+
 	fmt.Printf("Running %v in container with rootfs: %s\n", command, rootfs)
 
 	cmd := exec.Command("/proc/self/exe", append([]string{"child", rootfs}, command...)...)
@@ -47,7 +47,7 @@ func run() error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Cloneflags: syscall.CLONE_NEWUTS | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS | syscall.CLONE_NEWNET,
+		Cloneflags:   syscall.CLONE_NEWUTS | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS | syscall.CLONE_NEWNET,
 		Unshareflags: syscall.CLONE_NEWNS,
 	}
 
@@ -57,7 +57,7 @@ func run() error {
 func child() error {
 	rootfs := os.Args[2]
 	command := os.Args[3:]
-	
+
 	fmt.Printf("Running %v in container\n", command)
 
 	// Setup cgroups
@@ -107,7 +107,7 @@ func setupCgroups() error {
 	// Setup memory cgroup
 	memory := filepath.Join(cgroups, "memory")
 	memoryPath := filepath.Join(memory, containerName)
-	
+
 	if err := os.MkdirAll(memoryPath, 0755); err != nil {
 		return fmt.Errorf("failed to create memory cgroup: %w", err)
 	}
@@ -120,7 +120,7 @@ func setupCgroups() error {
 	// Setup CPU cgroup
 	cpu := filepath.Join(cgroups, "cpu,cpuacct")
 	cpuPath := filepath.Join(cpu, containerName)
-	
+
 	if err := os.MkdirAll(cpuPath, 0755); err != nil {
 		return fmt.Errorf("failed to create cpu cgroup: %w", err)
 	}
@@ -132,7 +132,7 @@ func setupCgroups() error {
 
 	// Add process to cgroups
 	pidStr := strconv.Itoa(pid)
-	
+
 	if err := os.WriteFile(filepath.Join(memoryPath, "cgroup.procs"), []byte(pidStr), 0700); err != nil {
 		return fmt.Errorf("failed to add process to memory cgroup: %w", err)
 	}
