@@ -29,8 +29,12 @@ func setupCgroups() error {
 		return fmt.Errorf("failed to set memory limit: %w", err)
 	}
 
-	// Setup CPU cgroup
-	cpu := filepath.Join(cgroups, "cpu,cpuacct")
+	// Setup CPU cgroup. Some systems mount cpu and cpuacct together, while
+	// others, including WSL, expose cpu as its own controller.
+	cpu, err := findCPUController(cgroups)
+	if err != nil {
+		return err
+	}
 	cpuPath := filepath.Join(cpu, containerName)
 
 	if err := os.MkdirAll(cpuPath, 0755); err != nil {
@@ -63,4 +67,15 @@ func setupCgroups() error {
 	}
 
 	return nil
+}
+
+func findCPUController(cgroups string) (string, error) {
+	for _, controller := range []string{"cpu,cpuacct", "cpu"} {
+		path := filepath.Join(cgroups, controller)
+		if _, err := os.Stat(filepath.Join(path, "cpu.cfs_quota_us")); err == nil {
+			return path, nil
+		}
+	}
+
+	return "", fmt.Errorf("failed to find writable cpu cgroup controller")
 }

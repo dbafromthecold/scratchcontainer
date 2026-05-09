@@ -160,7 +160,7 @@ func configureContainerInterface(pid int, hostIP, containerIP string) error {
 	}
 	defer func() {
 		if err := unix.Setns(int(currentNS.Fd()), unix.CLONE_NEWNET); err != nil {
-			log.Printf("warning: failed to restore host netns: %w", err)
+			log.Printf("warning: failed to restore host netns: %v", err)
 		}
 	}()
 
