@@ -1,4 +1,4 @@
-# ScratchContainer
+⁸# ScratchContainer
 
 A minimal, educational container runtime written in Go that demonstrates the core concepts of Linux containerization from scratch.
 
@@ -161,7 +161,7 @@ This is an educational project. Feel free to:
 - Create pull requests for enhancements
 - Use it as a reference for learning container internals
 
-## License
+## Licence
 
 This project is for educational purposes. See individual source files for licensing information.
 
